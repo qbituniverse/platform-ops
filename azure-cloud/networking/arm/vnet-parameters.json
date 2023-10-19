@@ -1,0 +1,51 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "#{template.location}#"
+        },
+        "vnetName": {
+            "value": "#{template.vnetName}#"
+        },
+        "vnetAddressPrefixes": {
+            "value": "#{template.vnetAddressPrefixes}#"
+        },
+        "subnet1": {
+            "value": "#{template.subnet1}#"
+        },
+        "subnet1AddressPrefix": {
+            "value": "#{template.subnet1AddressPrefix}#"
+        },
+        "subnet2": {
+            "value": "#{template.subnet2}#"
+        },
+        "subnet2AddressPrefix": {
+            "value": "#{template.subnet2AddressPrefix}#"
+        },
+        "subnet3": {
+            "value": "#{template.subnet3}#"
+        },
+        "subnet3AddressPrefix": {
+            "value": "#{template.subnet3AddressPrefix}#"
+        },
+        "subnet4": {
+            "value": "#{template.subnet4}#"
+        },
+        "subnet4AddressPrefix": {
+            "value": "#{template.subnet4AddressPrefix}#"
+        },
+        "nsg1": {
+            "value": "#{template.nsg1}#"
+        },
+        "nsg2": {
+            "value": "#{template.nsg2}#"
+        },
+        "nsg3": {
+            "value": "#{template.nsg3}#"
+        },
+        "nsg4": {
+            "value": "#{template.nsg4}#"
+        }
+    }
+}

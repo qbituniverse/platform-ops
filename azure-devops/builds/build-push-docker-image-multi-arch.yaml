@@ -1,0 +1,21 @@
+parameters:
+- name: imageRepository
+  type: string
+  default: 'N/A'
+
+- name: imageDockerfile
+  type: string
+  default: 'N/A'
+
+- name: imageTag
+  type: string
+  default: 'N/A'
+
+- name: imageArchitecture
+  type: string
+  default: 'N/A'
+
+steps:
+- script: |
+    docker buildx build --push --platform ${{ parameters.imageArchitecture }} -t ${{ parameters.imageRepository }}:${{ parameters.imageTag }} -f ${{ parameters.imageDockerfile }} .
+  displayName: 'Build and Push Multi-Platform Image'

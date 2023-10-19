@@ -1,0 +1,110 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - azure-devops/agents
+    - azure-devops/ado/build-multi-arch-ado-agent.yaml
+
+pr: none
+
+resources:
+  repositories:
+  - repository: platformops.dev
+    type: github
+    name: qbituniverse/platformops.dev
+    endpoint: qbituniverse
+
+stages:
+- stage: DockerBuildAmd64
+  displayName: 'Build Docker Image for ADO Agent - amd64'
+  pool:
+    name: self-hosted-ado-agents
+    demands:
+    - agent.name -equals ado-agent-amd64
+  variables:
+    imageDockerfile: azure-devops/agents/Dockerfile-ado-agent-amd64
+    imageRepository: qbituniverse/ado-agent
+    imageTag: $(imageVersion).$(Build.BuildId)
+    imageVersion: 'N/A'
+    imageArchitecture: linux/amd64
+  jobs:
+  - job: DockerBuildAmd64
+    displayName: 'Build Docker Image for ADO Agent - amd64'
+    timeoutInMinutes: 0
+    steps:
+    - template: azure-devops/builds/assign-build-number.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageTag: $(imageTag)
+    
+    - template: azure-devops/builds/dockerhub-login.yaml@platform-ops
+
+    - template: azure-devops/builds/create-buildx.yaml@platform-ops
+      parameters:
+        buildNumber: $(Build.BuildId)
+    
+    - template: azure-devops/builds/build-push-docker-image-multi-arch.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageRepository: $(imageRepository)
+        imageTag: $(imageTag)-amd64
+        imageArchitecture: $(imageArchitecture)
+
+    - template: azure-devops/builds/build-push-docker-image-multi-arch.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageRepository: $(imageRepository)
+        imageTag: latest-amd64
+        imageArchitecture: $(imageArchitecture)
+
+    - template: azure-devops/builds/delete-buildx.yaml@platform-ops
+      parameters:
+        buildNumber: $(Build.BuildId)
+
+- stage: DockerBuildArm64
+  displayName: 'Build Docker Image for ADO Agent - arm64'
+  pool:
+    name: self-hosted-ado-agents
+    demands:
+    - agent.name -equals ado-agent-arm64
+  variables:
+    imageDockerfile: azure-devops/agents/Dockerfile-ado-agent-arm64
+    imageRepository: qbituniverse/ado-agent
+    imageTag: $(imageVersion).$(Build.BuildId)
+    imageVersion: 'N/A'
+    imageArchitecture: linux/arm64
+  jobs:
+  - job: DockerBuildArm64
+    displayName: 'Build Docker Image for ADO Agent - arm64'
+    timeoutInMinutes: 0
+    steps:
+    - template: azure-devops/builds/assign-build-number.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageTag: $(imageTag)
+    
+    - template: azure-devops/builds/dockerhub-login.yaml@platform-ops
+
+    - template: azure-devops/builds/create-buildx.yaml@platform-ops
+      parameters:
+        buildNumber: $(Build.BuildId)
+    
+    - template: azure-devops/builds/build-push-docker-image-multi-arch.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageRepository: $(imageRepository)
+        imageTag: $(imageTag)-arm64
+        imageArchitecture: $(imageArchitecture)
+
+    - template: azure-devops/builds/build-push-docker-image-multi-arch.yaml@platform-ops
+      parameters:
+        imageDockerfile: $(imageDockerfile)
+        imageRepository: $(imageRepository)
+        imageTag: latest-arm64
+        imageArchitecture: $(imageArchitecture)
+
+    - template: azure-devops/builds/delete-buildx.yaml@platform-ops
+      parameters:
+        buildNumber: $(Build.BuildId)

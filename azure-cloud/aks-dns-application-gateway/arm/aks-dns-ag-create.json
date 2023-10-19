@@ -1,0 +1,321 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location for all the resources."
+            }
+        },
+        "ipAddressName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the IP Address."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Vnet."
+            }
+        },
+        "vnetAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for Vnet."
+            }
+        },
+        "subnetAgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Application Gateway Subnet."
+            }
+        },
+        "subnetAgAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for the Application Gateway Subnet."
+            }
+        },
+        "subnetAksName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the AKS Subnet."
+            }
+        },
+        "subnetAksAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for the AKS Subnet."
+            }
+        },
+        "subnetAksBackendIpAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for AKS backend resource access."
+            }
+        },
+        "applicationGatewayName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Application Gateway."
+            }
+        },
+        "aksName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the AKS Cluster."
+            }
+        },
+        "agentVMSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the Virtual Machine."
+            }
+        },
+        "agentCount": {
+            "type": "int",
+            "metadata": {
+                "description": "The number of agent nodes for the cluster."
+            }
+        },
+        "kubernetesVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "The version of Kubernetes."
+            }
+        },
+        "maxPods": {
+            "type": "int",
+            "metadata": {
+                "description": "Maximum number of pods that can run on a node."
+            }
+        },
+        "servicePrincipalClientId": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The Service Principal Client ID."
+            }
+        },
+        "servicePrincipalClientSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The Service Principal Client Secret."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('ipAddressName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static"
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnetAgName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetAgAddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnetAksName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnetAksAddressPrefix')]"
+                        }
+                    }
+                ]
+            },
+            "resources": [
+                {
+                    "type": "subnets",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "name": "[parameters('subnetAgName')]",
+                    "dependsOn": [
+                        "[parameters('vnetName')]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetAgAddressPrefix')]"
+                    }
+                },
+                {
+                    "type": "subnets",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "name": "[parameters('subnetAksName')]",
+                    "dependsOn": [
+                        "[parameters('vnetName')]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnetAksAddressPrefix')]"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Network/applicationGateways",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('applicationGatewayName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('ipAddressName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetAgName'))]"
+            ],
+            "properties": {
+                "sku": {
+                    "name": "Standard_v2",
+                    "tier": "Standard_v2",
+                    "capacity": 1
+                },
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "appGatewayIpConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetAgName'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendIPConfigurations": [
+                    {
+                        "name": "appGwPublicFrontendIp",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('ipAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "port_80",
+                        "properties": {
+                            "port": 80
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "aks-backend",
+                        "properties": {
+                            "backendAddresses": [
+                                {
+                                    "ipAddress": "[parameters('subnetAksBackendIpAddress')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "aks-http",
+                        "properties": {
+                            "port": 80,
+                            "protocol": "Http",
+                            "cookieBasedAffinity": "Disabled",
+                            "pickHostNameFromBackendAddress": false,
+                            "requestTimeout": 20
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "aks-listener",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName')), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+                            },
+                            "frontendPort": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName')), '/frontendPorts/port_80')]"
+                            },
+                            "protocol": "Http",
+                            "requireServerNameIndication": false
+                        }
+                    }
+                ],
+                "requestRoutingRules": [
+                    {
+                        "name": "aks-routing",
+                        "properties": {
+                            "ruleType": "Basic",
+                            "httpListener": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName')), '/httpListeners/aks-listener')]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName')), '/backendAddressPools/aks-backend')]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('applicationGatewayName')), '/backendHttpSettingsCollection/aks-http')]"
+                            }
+                        }
+                    }
+                ],
+                "enableHttp2": false
+            }
+        },
+        {
+            "type": "Microsoft.ContainerService/managedClusters",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('aksName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetAksName'))]"
+            ],
+            "properties": {
+                "kubernetesVersion": "[parameters('kubernetesVersion')]",
+                "dnsPrefix": "[parameters('aksName')]",
+                "enableRBAC": false,
+                "addonProfiles": {
+                    "httpApplicationRouting": {
+                        "enabled": false
+                    }
+                },
+                "agentPoolProfiles": [
+                    {
+                        "name": "agentpool",
+                        "count": "[parameters('agentCount')]",
+                        "vmSize": "[parameters('agentVMSize')]",
+                        "osDiskSizeGB": 100,
+                        "osDiskType": "Managed",
+                        "vnetSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetAksName'))]",
+                        "maxPods": "[parameters('maxPods')]",
+                        "type": "AvailabilitySet",
+                        "orchestratorVersion": "[parameters('kubernetesVersion')]",
+                        "mode": "User",
+                        "osType": "Linux"
+                    }
+                ],
+                "servicePrincipalProfile": {
+                    "clientId": "[parameters('servicePrincipalClientId')]",
+                    "secret": "[parameters('servicePrincipalClientSecret')]"
+                },
+                "networkProfile": {
+                    "networkPlugin": "kubenet",
+                    "loadBalancerSku": "Basic"
+                }
+            }
+        }
+    ]
+}

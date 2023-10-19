@@ -1,0 +1,113 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location for all the resources."
+            }
+        },
+        "vnetRg": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource group of the Vnet."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Vnet."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the AKS Subnet."
+            }
+        },
+        "aksName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the AKS Cluster."
+            }
+        },
+        "agentVMSize": {
+            "type": "string",
+            "metadata": {
+                "description": "The size of the Virtual Machine."
+            }
+        },
+        "agentCount": {
+            "type": "int",
+            "metadata": {
+                "description": "The number of agent nodes for the cluster."
+            }
+        },
+        "kubernetesVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "The version of Kubernetes."
+            }
+        },
+        "maxPods": {
+            "type": "int",
+            "metadata": {
+                "description": "Maximum number of pods that can run on a node."
+            }
+        },
+        "servicePrincipalClientId": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The Service Principal Client ID."
+            }
+        },
+        "servicePrincipalClientSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The Service Principal Client Secret."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.ContainerService/managedClusters",
+            "apiVersion": "2020-11-01",
+            "name": "[parameters('aksName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "kubernetesVersion": "[parameters('kubernetesVersion')]",
+                "dnsPrefix": "[parameters('aksName')]",
+                "enableRBAC": false,
+                "addonProfiles": {
+                    "httpApplicationRouting": {
+                        "enabled": false
+                    }
+                },
+                "agentPoolProfiles": [
+                    {
+                        "name": "agentpool",
+                        "count": "[parameters('agentCount')]",
+                        "vmSize": "[parameters('agentVMSize')]",
+                        "osDiskSizeGB": 100,
+                        "osDiskType": "Managed",
+                        "vnetSubnetID": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+                        "maxPods": "[parameters('maxPods')]",
+                        "type": "AvailabilitySet",
+                        "orchestratorVersion": "[parameters('kubernetesVersion')]",
+                        "mode": "User",
+                        "osType": "Linux"
+                    }
+                ],
+                "servicePrincipalProfile": {
+                    "clientId": "[parameters('servicePrincipalClientId')]",
+                    "secret": "[parameters('servicePrincipalClientSecret')]"
+                },
+                "networkProfile": {
+                    "networkPlugin": "kubenet",
+                    "loadBalancerSku": "Basic"
+                }
+            }
+        }
+    ]
+}

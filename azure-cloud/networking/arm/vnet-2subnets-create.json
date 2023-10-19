@@ -1,0 +1,103 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location for all the resources."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Vnet."
+            }
+        },
+        "vnetAddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for Vnet."
+            }
+        },
+        "subnet1Name": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of Subnet1."
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for Subnet1."
+            }
+        },
+        "subnet2Name": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of Subnet2."
+            }
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "metadata": {
+                "description": "Address Space for Subnet2."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('vnetName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2Name')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]"
+                        }
+                    }
+                ]
+            },
+            "resources": [
+                {
+                    "type": "subnets",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "name": "[parameters('subnet1Name')]",
+                    "dependsOn": [
+                        "[parameters('vnetName')]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet1AddressPrefix')]"
+                    }
+                },
+                {
+                    "type": "subnets",
+                    "apiVersion": "2020-05-01",
+                    "location": "[parameters('location')]",
+                    "name": "[parameters('subnet2Name')]",
+                    "dependsOn": [
+                        "[parameters('vnetName')]"
+                    ],
+                    "properties": {
+                        "addressPrefix": "[parameters('subnet2AddressPrefix')]"
+                    }
+                }
+            ]
+        }
+    ]
+}

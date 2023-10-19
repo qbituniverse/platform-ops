@@ -1,0 +1,9 @@
+parameters:
+- name: buildNumber
+  type: string
+  default: 'N/A'
+
+steps:
+- script: |
+    docker buildx create --use --bootstrap --name ado-agent-buildx-${{ parameters.buildNumber }}
+  displayName: 'Create buildx'

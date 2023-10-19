@@ -1,0 +1,10 @@
+parameters:
+- name: buildNumber
+  type: string
+  default: 'N/A'
+
+steps:
+- script: |
+    docker buildx rm -f ado-agent-buildx-${{ parameters.buildNumber }}
+    docker buildx rm --all-inactive -f
+  displayName: 'Delete buildx'

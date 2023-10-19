@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eks-dns-lb
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-dns-lb-app
+  namespace: eks-dns-lb
+  labels:
+    app: eks-dns-lb-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: eks-dns-lb-app
+  template:
+    metadata:
+      labels:
+        app: eks-dns-lb-app
+    spec:
+      containers:
+      - name: eks-dns-lb-app
+        image: k8s.gcr.io/echoserver:1.10
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: eks-dns-lb-app
+  namespace: eks-dns-lb
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: <AWS SSL CERT ARN>
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+spec:
+  selector:
+    app: eks-dns-lb-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+  - name: https
+    port: 443
+    targetPort: 8080
+  type: LoadBalancer

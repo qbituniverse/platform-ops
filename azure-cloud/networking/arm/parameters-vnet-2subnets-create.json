@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "<LOCATION NAME>"
+        },
+        "vnetName": {
+            "value": "<VNET NAME>"
+        },
+        "vnetAddressPrefix": {
+            "value": "<VNET ADDRESS SPACE>"
+        },
+        "subnet1Name": {
+            "value": "<SUBNET1 NAME>"
+        },
+        "subnet1AddressPrefix": {
+            "value": "<SUBNET1 ADDRESS SPACE>"
+        },
+        "subnet2Name": {
+            "value": "<SUBNET2 NAME>"
+        },
+        "subnet2AddressPrefix": {
+            "value": "<SUBNET2 ADDRESS SPACE>"
+        }
+    }
+}

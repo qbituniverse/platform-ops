@@ -1,0 +1,5 @@
+ip_id=$(az network public-ip list --query "[?ipAddress!=null]|[?contains(ipAddress, '${3}')].[id]" --output tsv)
+az network public-ip update --ids $ip_id --dns-name ${2}
+nsg_name=$(az network nsg list --resource-group ${1} --query "[].name" --output tsv)
+az network nsg rule create --resource-group ${1} --nsg-name $nsg_name -n "Port_80_Deny_All" --priority 110 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 80 --access Deny --protocol '*' --description "Deny all traffic on port 80"
+az network nsg rule create --resource-group ${1} --nsg-name $nsg_name -n "Port_443_Deny_All" --priority 210 --source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges 443 --access Deny --protocol '*' --description "Deny all traffic on port 443"

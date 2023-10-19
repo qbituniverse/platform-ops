@@ -1,0 +1,195 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "resourceName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Virtual Machine resource."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The location of Virtual Machine resource."
+            }
+        },
+        "shutdownTime": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource shutdown time."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The size of the Virtual Machine."
+            }
+        },
+        "vmSku": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The SKU of the Virtual Machine."
+            }
+        },
+        "diskType": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Disk Type."
+            }
+        },
+        "diskSize": {
+            "type": "int",
+            "defaultValue": 0,
+            "metadata": {
+                "description": "Disk Size (GB)."
+            },
+            "minValue": 0,
+            "maxValue": 1023
+        },
+        "adminUsername": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Administrator Username."
+            }
+        },
+        "adminPassword": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Administrator Password."
+            }
+        },
+        "vnetRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Vnet resource group."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Vnet name."
+            }
+        },
+        "vnetSubnetName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Vnet subnet name."
+            }
+        }
+    },
+    "variables" : {
+        "nicName": "[concat(parameters('resourceName'),'-nic')]",
+        "subnetRef": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'),  parameters('vnetSubnetName'))]",
+        "shutDownScheduleName": "[concat('shutdown-computevm-',parameters('resourceName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": []
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "primary": true,
+                "tapConfigurations": []
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('resourceName')]",
+            "location": "[parameters('location')]",
+            "apiVersion": "2018-10-01",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('resourceName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "[parameters('vmSku')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('diskType')]"
+                        },
+                        "diskSizeGB": "[parameters('diskSize')]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                          "properties": {
+                            "primary": true
+                          },
+                          "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicName'))]"
+                        }
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+            ]
+        },
+        {
+            "type": "microsoft.devtestlab/schedules",
+            "name": "[variables('shutDownScheduleName')]",
+            "apiVersion": "2016-05-15",
+            "location": "westeurope",
+            "properties": {
+                "status": "Enabled",
+                "taskType": "ComputeVmShutdownTask",
+                "dailyRecurrence": {
+                    "time": "[parameters('shutdownTime')]"
+                },
+                "timeZoneId": "GMT Standard Time",
+                "notificationSettings": {
+                    "status": "Disabled",
+                    "timeInMinutes": 30
+                },
+                "targetResourceId": "[resourceId('Microsoft.Compute/virtualMachines', parameters('resourceName'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachines', parameters('resourceName'))]"
+            ]
+        }
+    ]
+}

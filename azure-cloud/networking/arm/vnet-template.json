@@ -1,0 +1,300 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The location for the resources."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Vnet."
+            }
+        },
+        "vnetAddressPrefixes": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Address Prefixes for Vnet."
+            }
+        },
+        "subnet1": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Subnet 1."
+            }
+        },
+        "subnet1AddressPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Address Prefix for Subnet 1."
+            }
+        },
+        "subnet2": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Subnet 2."
+            }
+        },
+        "subnet2AddressPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Address Prefix for Subnet 2."
+            }
+        },
+        "subnet3": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Subnet 3."
+            }
+        },
+        "subnet3AddressPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Address Prefix for Subnet 3."
+            }
+        },
+        "subnet4": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Subnet 4."
+            }
+        },
+        "subnet4AddressPrefix": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Address Prefix for Subnet 4."
+            }
+        },
+        "nsg1": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Nsg 1."
+            }
+        },
+        "nsg2": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Nsg 2."
+            }
+        },
+        "nsg3": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Nsg 3."
+            }
+        },
+        "nsg4": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The name of the Nsg 4."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('nsg1')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('nsg2')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('nsg3')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[parameters('nsg4')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]"
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('vnetName')]",
+            "apiVersion": "2018-12-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('vnetAddressPrefixes')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('subnet1')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet1AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg1'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": []
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet2')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet2AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg2'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": []
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet3')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet3AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg3'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": []
+                        }
+                    },
+                    {
+                        "name": "[parameters('subnet4')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('subnet4AddressPrefix')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg4'))]"
+                            },
+                            "serviceEndpoints": [],
+                            "delegations": []
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg1'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg2'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg3'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg4'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "name": "[concat(parameters('nsg1'), '/', 'RDP_3389')]",
+            "apiVersion": "2018-12-01",
+            "properties": {
+                "protocol": "TCP",
+                "sourcePortRange": "*",
+                "destinationPortRange": "3389",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 200,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg1'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('vnetName'), '/', parameters('subnet1'))]",
+            "apiVersion": "2018-12-01",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnet1AddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg1'))]"
+                },
+                "serviceEndpoints": [],
+                "delegations": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg1'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('vnetName'), '/', parameters('subnet2'))]",
+            "apiVersion": "2018-12-01",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnet2AddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg2'))]"
+                },
+                "serviceEndpoints": [],
+                "delegations": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg2'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('vnetName'), '/', parameters('subnet3'))]",
+            "apiVersion": "2018-12-01",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnet3AddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg3'))]"
+                },
+                "serviceEndpoints": [],
+                "delegations": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg3'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('vnetName'), '/', parameters('subnet4'))]",
+            "apiVersion": "2018-12-01",
+            "scale": null,
+            "properties": {
+                "addressPrefix": "[parameters('subnet4AddressPrefix')]",
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg4'))]"
+                },
+                "serviceEndpoints": [],
+                "delegations": []
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsg4'))]"
+            ]
+        }
+    ]
+}
