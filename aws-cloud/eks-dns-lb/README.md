@@ -27,7 +27,7 @@ You'll need these prerequisite items in order to run this tutorial.
 |[AWS CLI](https://aws.amazon.com/cli/)|To interact with AWS resources from Powershell|
 |[EKSCTL CLI](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html)|To interact with AWS EKS clusters from Powershell|
 |[Kubernetes CLI](https://chocolatey.org/packages/kubernetes-cli)|To interact with Kubernetes cluster from Powershell|
-|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *platformops.dev*|
+|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *domain.com*|
 
 ### Tutorial Contents
 
@@ -45,15 +45,15 @@ It is assumed that beyond this point of this tutorial:
 
 ## Verify Pre-deployment DNS Access
 
-Just to make sure your chosen DNS entry, in our case *eks-dns-lb.platformops.dev*, forward rule is not working.
+Just to make sure your chosen DNS entry, in our case *eks-dns-lb.domain.com*, forward rule is not working.
 
-Let's request *eks-dns-lb.platformops.dev* and the result should be the typical *This site can't be reached* error.
+Let's request *eks-dns-lb.domain.com* and the result should be the typical *This site can't be reached* error.
 
 ![Server not found](assets/no-access.PNG)
 
 ### Expected Result
 
-At the end of this tutorial, your chosen DNS entry, in our case *eks-dns-lb.platformops.dev*, will return this.
+At the end of this tutorial, your chosen DNS entry, in our case *eks-dns-lb.domain.com*, will return this.
 
 ![DNS Forward Access to EKS in AWS](assets/dns-ssl-access.PNG)
 
@@ -81,7 +81,7 @@ $nodeType = "t3.medium"
 $nodeCount = "1"
 $volumeSize = "32"
 $maxPods = "110"
-$sslDomainName = "eks-dns-lb.platformops.dev"
+$sslDomainName = "eks-dns-lb.domain.com"
 ```
 
 ## Provision AWS SSL Certificate
@@ -219,7 +219,7 @@ If you have your NS ([Nameserver](https://en.wikipedia.org/wiki/Name_server)) Re
 
 ## Test our Application
 
-Simply request your chosen Domain, in our case that is *eks-dns-lb.platformops.dev*, and verify that it now resolves to our sample EKS application running in Kubernetes in AWS.
+Simply request your chosen Domain, in our case that is *eks-dns-lb.domain.com*, and verify that it now resolves to our sample EKS application running in Kubernetes in AWS.
 
 > If we didn't have SSL Certificate configured as per steps above our sample EKS website would not respond because the latest browsers enforce [HTTP Strict Transport Security (HSTS)](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security).
 

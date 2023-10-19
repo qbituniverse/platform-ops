@@ -5,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: aks-dns-lb@platformops.dev
+    email: aks-dns-lb@domain.com
     privateKeySecretRef:
       name: letsencrypt
     solvers:
@@ -79,10 +79,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - aks-dns-lb.platformops.dev
+    - aks-dns-lb.domain.com
     secretName: tls-secret
   rules:
-  - host: aks-dns-lb.platformops.dev
+  - host: aks-dns-lb.domain.com
     http:
       paths:
       - path: /

@@ -27,7 +27,7 @@ You'll need these prerequisite items in order to run this tutorial.
 |[Azure CLI](https://docs.microsoft.com/en-gb/cli/azure/)|To interact with Azure resources from Powershell|
 |[Kubernetes CLI](https://chocolatey.org/packages/kubernetes-cli)|To interact with Kubernetes cluster from Powershell|
 |[Helm CLI](https://chocolatey.org/packages/kubernetes-helm)|To interact with Kubernetes Helm deployments from Powershell|
-|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *platformops.dev*|
+|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *domain.com*|
 
 ### Tutorial Contents
 
@@ -45,15 +45,15 @@ It is assumed that beyond this point of this tutorial:
 
 ## Verify Pre-deployment DNS Access
 
-Just to make sure your chosen DNS entry, in our case *aks-dns-lb.platformops.dev*, forward rule is not working.
+Just to make sure your chosen DNS entry, in our case *aks-dns-lb.domain.com*, forward rule is not working.
 
-Let's request *aks-dns-lb.platformops.dev* and the result should be the typical *This site can't be reached* error.
+Let's request *aks-dns-lb.domain.com* and the result should be the typical *This site can't be reached* error.
 
 ![Server not found](assets/no-access.PNG)
 
 ### Expected Result
 
-At the end of this tutorial, your chosen DNS entry, in our case *aks-dns-lb.platformops.dev*, will return this.
+At the end of this tutorial, your chosen DNS entry, in our case *aks-dns-lb.domain.com*, will return this.
 
 ![DNS Forward Access to AKS in Azure](assets/dns-ssl-access.PNG)
 
@@ -227,7 +227,7 @@ kubectl get certificate -n aks-dns-lb
 
 ## Test our Application
 
-Simply request your chosen Domain, in our case that is *aks-dns-lb.platformops.dev*, and verify that it now resolves to our sample AKS application running in Kubernetes in Azure.
+Simply request your chosen Domain, in our case that is *aks-dns-lb.domain.com*, and verify that it now resolves to our sample AKS application running in Kubernetes in Azure.
 
 > If we didn't have SSL Certificate configured as per steps above our sample AKS website would not respond because the latest browsers enforce [HTTP Strict Transport Security (HSTS)](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security).
 

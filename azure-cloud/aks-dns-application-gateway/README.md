@@ -27,8 +27,8 @@ You'll need these prerequisite items in order to run this tutorial.
 |[Kubernetes CLI](https://chocolatey.org/packages/kubernetes-cli)|To interact with Kubernetes cluster from Powershell|
 |[Helm CLI](https://chocolatey.org/packages/kubernetes-helm)|To interact with Kubernetes Helm deployments from Powershell|
 |[OpenSSL](https://chocolatey.org/packages/openssl)|To convert our SSL Certificate to PFX|
-|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *platformops.dev*|
-|[SSL Certificate](https://en.wikipedia.org/wiki/Public_key_certificate)|Your own SSL Certificate to secure your Domain - in this tutorial I'm using SSL Cert to secure *aks-dns-ag.platformops.dev*|
+|[Domain Name](https://en.wikipedia.org/wiki/Domain_name)|Your own Domain Name - in this tutorial I'm using my own *domain.com*|
+|[SSL Certificate](https://en.wikipedia.org/wiki/Public_key_certificate)|Your own SSL Certificate to secure your Domain - in this tutorial I'm using SSL Cert to secure *aks-dns-ag.domain.com*|
 
 ### Tutorial Contents
 
@@ -48,15 +48,15 @@ It is assumed that beyond this point of this tutorial:
 
 ## Verify Pre-deployment DNS Access
 
-Just to make sure your chosen DNS entry, in our case *aks-dns-ag.platformops.dev*, forward rule is not working. 
+Just to make sure your chosen DNS entry, in our case *aks-dns-ag.domain.com*, forward rule is not working. 
 
-Let's request *aks-dns-ag.platformops.dev* and the result should be the typical *This site can't be reached* error.
+Let's request *aks-dns-ag.domain.com* and the result should be the typical *This site can't be reached* error.
 
 ![Server not found](assets/no-access.PNG)
 
 ### Expected Result
 
-At the end of this tutorial, your chosen DNS entry, in our case *aks-dns-ag.platformops.dev*, will return this.
+At the end of this tutorial, your chosen DNS entry, in our case *aks-dns-ag.domain.com*, will return this.
 
 ![DNS Forward Access to AKS in Azure](assets/dns-ssl-access.PNG)
 
@@ -236,7 +236,7 @@ kubectl get all -n aks-dns-ag
 
 ## Acquire SSL Certificate
 
-We'll now secure access to our sample AKS application with SSL. For that, you'll need to provision PFX certificate from your SSL Certificate Issuer. For the purposes of this tutorial, we'll acquire SSL Certificate to secure the following Subdomain *aks-dns-ag* on our Domain *platformops.dev*.
+We'll now secure access to our sample AKS application with SSL. For that, you'll need to provision PFX certificate from your SSL Certificate Issuer. For the purposes of this tutorial, we'll acquire SSL Certificate to secure the following Subdomain *aks-dns-ag* on our Domain *domain.com*.
 
 This process can sometimes cause one or two headaches, so I'll guide you here through some gotchas below.
 
@@ -321,7 +321,7 @@ If you use your own [Azure DNS](https://azure.microsoft.com/en-gb/services/dns/)
 
 ## Test our Application
 
-Simply request your chosen Domain, in our case that is *aks-dns-ag.platformops.dev*, and verify that it now resolves to our sample AKS application running in Kubernetes AKS in Azure.
+Simply request your chosen Domain, in our case that is *aks-dns-ag.domain.com*, and verify that it now resolves to our sample AKS application running in Kubernetes AKS in Azure.
 
 > If we didn't have SSL Certificate configured as per steps above our sample AKS website would not respond because the latest browsers enforce [HTTP Strict Transport Security (HSTS)](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security).
 
