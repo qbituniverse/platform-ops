@@ -12,7 +12,7 @@ $nodeType = "t3.medium"
 $nodeCount = "1"
 $volumeSize = "32"
 $maxPods = "110"
-$sslDomainName = "eks-dns-lb.platformops.dev"
+$sslDomainName = "eks-dns-lb.domain.com"
 
 #############################################################################
 # Provision AWS SSL Certificate

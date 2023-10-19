@@ -12,7 +12,7 @@ metadata:
   namespace: gke-dns-lb
 spec:
   domains:
-    - gke-dns-lb.platformops.dev
+    - gke-dns-lb.domain.com
 
 ---
 

@@ -11,9 +11,9 @@ pr: none
 
 resources:
   repositories:
-  - repository: platformops.dev
+  - repository: platform-ops
     type: github
-    name: qbituniverse/platformops.dev
+    name: qbituniverse/platform-ops
     endpoint: qbituniverse
 
 stages:
