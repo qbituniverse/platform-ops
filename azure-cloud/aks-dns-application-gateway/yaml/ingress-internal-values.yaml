@@ -1,0 +1,8 @@
+controller:
+  replicaCount: 1
+  admissionWebhooks:
+      enabled: false
+  service:
+    externalTrafficPolicy: "Local"
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"

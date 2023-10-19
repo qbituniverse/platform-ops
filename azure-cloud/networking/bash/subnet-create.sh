@@ -1,0 +1,1 @@
+az network vnet subnet create -g ${1} --vnet-name ${2} -n ${3} --address-prefix ${4} --network-security-group ${5}

@@ -1,0 +1,49 @@
+FROM ubuntu:22.04
+
+LABEL version="22.04" \
+ 	  description="Image to create ADO agent for arm64 architecture" \
+	  maintainer="marcin.narloch@qbituniverse.com"
+
+# core ubuntu packages
+RUN apt update
+RUN apt upgrade -y
+RUN apt install -y curl git jq libicu70
+
+# powershell
+RUN LATEST_RELEASE=$(curl -L -s -H 'Accept: application/json' https://github.com/PowerShell/PowerShell/releases/latest) && \
+    LATEST_VERSION_V=$(echo $LATEST_RELEASE | sed -e 's/.*"tag_name":"\([^"]*\)".*/\1/') && \
+    LATEST_VERSION=$(echo $LATEST_VERSION_V | sed 's/^.//') && \
+    ARTIFACT_URL="https://github.com/PowerShell/PowerShell/releases/download/$LATEST_VERSION_V/powershell-$LATEST_VERSION-linux-arm64.tar.gz" && \
+    curl -L -o /tmp/powershell.tar.gz $ARTIFACT_URL
+RUN mkdir -p /opt/microsoft/powershell/7
+RUN tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7
+RUN chmod +x /opt/microsoft/powershell/7/pwsh
+RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
+
+# docker
+RUN for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do apt-get remove $pkg; done
+RUN apt-get update
+RUN apt-get install -y ca-certificates curl gnupg
+RUN install -m 0755 -d /etc/apt/keyrings
+RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+RUN chmod a+r /etc/apt/keyrings/docker.gpg
+RUN echo \
+    "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+    "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+    tee /etc/apt/sources.list.d/docker.list > /dev/null
+RUN apt-get update
+RUN apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# .net core
+RUN apt-get update
+RUN apt-get install -y dotnet-sdk-6.0
+
+# startup
+ENV TARGETARCH="linux-arm64"
+
+WORKDIR /azp/
+
+COPY /azure-devops/agents/start.sh ./
+RUN chmod +x ./start.sh
+
+ENTRYPOINT ./start.sh

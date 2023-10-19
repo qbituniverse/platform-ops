@@ -1,0 +1,155 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location for all the resources."
+            }
+        },
+        "agName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the Application Gateway."
+            }
+        },
+        "ipAddressName": {
+            "type": "String",
+            "metadata": {
+                "description": "The name of the IP Address for Frontend access."
+            }
+        },
+        "ipAddressRg": {
+            "type": "String",
+            "metadata": {
+                "description": "Resource group of the IP Address for Frontend access."
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Vnet."
+            }
+        },
+        "vnetRg": {
+            "type": "String",
+            "metadata": {
+                "description": "Resource group of the Vnet."
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Application Gateway Subnet."
+            }
+        },
+        "backendIpAddress": {
+            "type": "string",
+            "metadata": {
+                "description": "IP Address for backend resource access."
+            }
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Network/applicationGateways",
+            "apiVersion": "2020-05-01",
+            "name": "[parameters('agName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sku": {
+                    "name": "Standard_v2",
+                    "tier": "Standard_v2",
+                    "capacity": 1
+                },
+                "gatewayIPConfigurations": [
+                    {
+                        "name": "appGatewayIpConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId(parameters('vnetRg'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendIPConfigurations": [
+                    {
+                        "name": "appGwPublicFrontendIp",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId(parameters('ipAddressRg'), 'Microsoft.Network/publicIPAddresses', parameters('ipAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "frontendPorts": [
+                    {
+                        "name": "port_80",
+                        "properties": {
+                            "port": 80
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "ag-backend",
+                        "properties": {
+                            "backendAddresses": [
+                                {
+                                    "ipAddress": "[parameters('backendIpAddress')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "backendHttpSettingsCollection": [
+                    {
+                        "name": "ag-http",
+                        "properties": {
+                            "port": 80,
+                            "protocol": "Http",
+                            "cookieBasedAffinity": "Disabled",
+                            "pickHostNameFromBackendAddress": false,
+                            "requestTimeout": 20
+                        }
+                    }
+                ],
+                "httpListeners": [
+                    {
+                        "name": "ag-listener",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('agName')), '/frontendIPConfigurations/appGwPublicFrontendIp')]"
+                            },
+                            "frontendPort": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('agName')), '/frontendPorts/port_80')]"
+                            },
+                            "protocol": "Http",
+                            "requireServerNameIndication": false
+                        }
+                    }
+                ],
+                "requestRoutingRules": [
+                    {
+                        "name": "ag-routing",
+                        "properties": {
+                            "ruleType": "Basic",
+                            "httpListener": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('agName')), '/httpListeners/ag-listener')]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('agName')), '/backendAddressPools/ag-backend')]"
+                            },
+                            "backendHttpSettings": {
+                                "id": "[concat(resourceId('Microsoft.Network/applicationGateways', parameters('agName')), '/backendHttpSettingsCollection/ag-http')]"
+                            }
+                        }
+                    }
+                ],
+                "enableHttp2": false
+            }
+        }
+    ]
+}

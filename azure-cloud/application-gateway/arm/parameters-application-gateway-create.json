@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "<LOCATION NAME>"
+        },
+        "agName": {
+            "value": "<APPLICATION GATEWAY NAME>"
+        },
+        "ipAddressName": {
+            "value": "<FRONTEND ACCESS IP ADDRESS NAME>"
+        },
+        "ipAddressRg": {
+            "value": "<FRONTEND ACCESS IP ADDRESS RESOURCE GROUP>"
+        },
+        "vnetName": {
+            "value": "<VNET NAME>"
+        },
+        "vnetRg": {
+            "value": "<VNET RESOURCE GROUP>"
+        },
+        "subnetName": {
+            "value": "<APPLICATION GATEWAY SUBNET NAME>"
+        },
+        "backendIpAddress": {
+            "value": "<BACKEND ACCESS IP ADDRESS>"
+        }
+    }
+}

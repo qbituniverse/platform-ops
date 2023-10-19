@@ -1,0 +1,39 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "<LOCATION NAME>"
+        },
+        "vnetRg": {
+            "value": "<VNET RESOURCE GROUP NAME>"
+        },
+        "vnetName": {
+            "value": "<VNET NAME>"
+        },
+        "subnetName": {
+            "value": "<AKS SUBNET NAME>"
+        },
+        "aksName": {
+            "value": "<AKS CLUSTER NAME>"
+        },
+        "agentVMSize": {
+            "value": "<AKS NODE VM SIZE>"
+        },
+        "agentCount": {
+            "value": "<AKS NODE NUMBER>"
+        },
+        "kubernetesVersion": {
+            "value": "<AKS KUBERNETES VERSION>"
+        },
+        "maxPods": {
+            "value": "<AKS MAX PODS>"
+        },
+        "servicePrincipalClientId": {
+            "value": "<AKS SERVICE PRINCIPAL ID>"
+        },
+        "servicePrincipalClientSecret": {
+            "value": "<AKS SERVICE PRINCIPAL SECRET>"
+        }
+    }
+}

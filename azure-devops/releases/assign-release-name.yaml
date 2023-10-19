@@ -1,0 +1,8 @@
+parameters:
+- name: imageTag
+  type: string
+  default: 'N/A'
+
+steps:
+- powershell: Write-Host "##vso[release.updatereleasename]${{ parameters.imageTag }}"
+  displayName: 'Assign Release Name'

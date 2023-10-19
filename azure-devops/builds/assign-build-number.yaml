@@ -1,0 +1,24 @@
+parameters:
+- name: imageDockerfile
+  type: string
+  default: 'N/A'
+
+- name: imageTag
+  type: string
+  default: 'N/A'
+
+steps:
+- powershell: |
+    $ImageVersion = 0
+    Get-Content ${{ parameters.imageDockerfile }} | Where-Object {$_.Replace("`t","").Replace(' ', '') -match "^LABELversion"} | ForEach-Object {
+      If ($_.Length -gt 0) {
+        If ($_.Split("=").Length -eq 2) {
+          $ImageVersion = $_.Split("=")[1].Replace('"', '').Replace("`t","").Replace(' ', '').Replace('\', '')
+        }
+      }
+    }
+    Write-Output ("##vso[task.setvariable variable=imageVersion;]$ImageVersion")
+  displayName: 'Read and Set imageVersion from the Dockerfile'
+
+- powershell: Write-Host "##vso[build.updatebuildnumber]${{ parameters.imageTag }}"
+  displayName: 'Assign Build Number'

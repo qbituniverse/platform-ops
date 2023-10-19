@@ -1,0 +1,39 @@
+parameters:
+- name: imageRepository
+  type: string
+  default: 'N/A'
+
+- name: imageDockerfile
+  type: string
+  default: 'N/A'
+
+- name: imageTag
+  type: string
+  default: 'N/A'
+
+- name: addLatestTag
+  type: boolean
+  default: true
+
+steps:
+- task: Docker@2
+  displayName: 'Build and Push Image plus latest Tag'
+  condition: eq(${{ parameters.addLatestTag }}, true)
+  inputs:
+    containerRegistry: DockerHub
+    repository: ${{ parameters.imageRepository }}
+    Dockerfile: ${{ parameters.imageDockerfile }}
+    buildContext: ''
+    tags: |
+      latest
+      ${{ parameters.imageTag }}
+
+- task: Docker@2
+  displayName: 'Build and Push Image no latest Tag'
+  condition: eq(${{ parameters.addLatestTag }}, false)
+  inputs:
+    containerRegistry: DockerHub
+    repository: ${{ parameters.imageRepository }}
+    Dockerfile: ${{ parameters.imageDockerfile }}
+    buildContext: ''
+    tags: ${{ parameters.imageTag }}
