@@ -10,6 +10,17 @@ Software is no longer delivered in isolation. The days of a manual compile, buil
 
 In essence, the 5 points above define how important **PlatformOps** role is in today’s world. The role of **PlatformOps** is to help you learn how to put together simple as well as complex software architectures and deliver these in "one-click", or "as code" fashion - reliably, any time of the day.
 
+## Resources
+
+|Resource|
+|-----|
+|[Azure Cloud](./azure-cloud)|
+|[Azure DevOps](./azure-devops)|
+|[AWS Cloud](./aws-cloud)|
+|[Google Cloud](./google-cloud)|
+|[Docker](./docker)|
+|[Kubernetes](./kubernetes)|
+
 # Who should read this document?
 
 Developers, Software and Infrastructure Architects, Infrastructure and Operations Engineers, and DevOps Engineers. In fact anyone wishing to learn what modern software delivery really is all about... and how to do it...
