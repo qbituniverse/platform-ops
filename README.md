@@ -14,12 +14,12 @@ In essence, the 5 points above define how important **PlatformOps** role is in t
 
 |Resource|
 |-----|
-|[Azure Cloud](./azure-cloud)|
-|[Azure DevOps](./azure-devops)|
-|[AWS Cloud](./aws-cloud)|
-|[Google Cloud](./google-cloud)|
-|[Docker](./docker)|
-|[Kubernetes](./kubernetes)|
+|[Azure Cloud](/azure-cloud)|
+|[Azure DevOps](/azure-devops)|
+|[AWS Cloud](/aws-cloud)|
+|[Google Cloud](/google-cloud)|
+|[Docker](/docker)|
+|[Kubernetes](/kubernetes)|
 
 # Who should read this document?
 
