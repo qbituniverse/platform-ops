@@ -1,4 +1,4 @@
-# Introduction
+# PlatformOps
 
 Software is no longer delivered in isolation. The days of a manual compile, build, package and deploy are long gone. This shift from manual to automated processes has brought new practices in the world of software development and delivery, mainly around the following 5 points:
 
@@ -12,15 +12,9 @@ In essence, the 5 points above define how important **PlatformOps** role is in t
 
 ## Resources
 
-|Resource|
-|-----|
-|[Azure Cloud](/azure-cloud)|
-|[Azure DevOps](/azure-devops)|
-|[AWS Cloud](/aws-cloud)|
-|[Google Cloud](/google-cloud)|
-|[Docker](/docker)|
-|[Kubernetes](/kubernetes)|
-
-# Who should read this document?
-
-Developers, Software and Infrastructure Architects, Infrastructure and Operations Engineers, and DevOps Engineers. In fact anyone wishing to learn what modern software delivery really is all about... and how to do it...
+- [Azure Cloud](/azure-cloud)
+- [Azure DevOps](/azure-devops)
+- [AWS Cloud](/aws-cloud)
+- [Google Cloud](/google-cloud)
+- [Docker](/docker)
+- [Kubernetes](/kubernetes)
